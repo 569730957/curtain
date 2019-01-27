@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.tgoodscate.dao.TGoodsCateDao">
+    
+	<sql id="tGoodsCateColumns">
+		a.categoodsid AS "categoodsid",
+		a.cateid AS "cateid",
+		a.goodsid AS "goodsid"
+	</sql>
+	
+	<sql id="tGoodsCateJoins">
+	</sql>
+    
+	<select id="get" resultType="TGoodsCate">
+		SELECT 
+			<include refid="tGoodsCateColumns"/>
+		FROM t_goods_cate a
+		<include refid="tGoodsCateJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TGoodsCate">
+		SELECT 
+			<include refid="tGoodsCateColumns"/>
+		FROM t_goods_cate a
+		<include refid="tGoodsCateJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TGoodsCate">
+		SELECT 
+			<include refid="tGoodsCateColumns"/>
+		FROM t_goods_cate a
+		<include refid="tGoodsCateJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_goods_cate(
+			categoodsid,
+			cateid,
+			goodsid
+		) VALUES (
+			#{categoodsid},
+			#{cateid},
+			#{goodsid}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_goods_cate SET 	
+			categoodsid = #{categoodsid},
+			cateid = #{cateid},
+			goodsid = #{goodsid}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="deleteByGoodsid" parameterType="String">
+		DELETE FROM t_goods_cate
+		WHERE goodsid = #{goodsid}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM t_goods_cate
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

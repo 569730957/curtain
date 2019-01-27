@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.tstore.dao.TStoreDao">
+    
+	<sql id="tStoreColumns">
+		a.storeid AS "storeid",
+		a.storename AS "storename",
+		a.logo AS "logo"
+	</sql>
+	
+	<sql id="tStoreJoins">
+	</sql>
+    
+	<select id="get" resultType="TStore">
+		SELECT 
+			<include refid="tStoreColumns"/>
+		FROM t_store a
+		<include refid="tStoreJoins"/>
+		WHERE a.storeid = #{storeid}
+	</select>
+	
+	<select id="findList" resultType="TStore">
+		SELECT 
+			<include refid="tStoreColumns"/>
+		FROM t_store a
+		<include refid="tStoreJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TStore">
+		SELECT 
+			<include refid="tStoreColumns"/>
+		FROM t_store a
+		<include refid="tStoreJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_store(
+			storeid,
+			storename,
+			logo
+		) VALUES (
+			#{storeid},
+			#{storename},
+			#{logo}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_store SET 	
+			logo = #{logo}
+		WHERE storeid = '1'
+	</update>
+	
+	<update id="delete">
+		DELETE FROM t_store
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

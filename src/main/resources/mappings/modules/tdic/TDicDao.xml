@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.tdic.dao.TDicDao">
+    
+	<sql id="tDicColumns">
+		a.dicid AS "dicid",
+		a.dictype AS "dictype",
+		a.dicname AS "dicname",
+		a.dicvalue AS "dicvalue",
+		a.sort AS "sort",
+		a.remark
+	</sql>
+	
+	<sql id="tDicJoins">
+	</sql>
+    
+	<select id="get" resultType="TDic">
+		SELECT 
+			<include refid="tDicColumns"/>
+		FROM t_dic a
+		<include refid="tDicJoins"/>
+		WHERE a.dicid = #{id}
+	</select>
+	
+	<select id="findList" resultType="TDic">
+		SELECT 
+			<include refid="tDicColumns"/>
+		FROM t_dic a
+		<include refid="tDicJoins"/>
+		<where>
+			<if test="dictype!=null and dictype!=''">
+				and a.dictype=#{dictype}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TDic">
+		SELECT 
+			<include refid="tDicColumns"/>
+		FROM t_dic a
+		<include refid="tDicJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_dic(
+			dicid,
+			dictype,
+			dicname,
+			dicvalue,
+			sort,
+			remark
+		) VALUES (
+			#{dicid},
+			#{dictype},
+			#{dicname},
+			#{dicvalue},
+			#{sort},
+			#{remark}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_dic SET 	
+			dicid = #{dicid},
+			dictype = #{dictype},
+			dicname = #{dicname},
+			dicvalue = #{dicvalue},
+			sort = #{sort},
+			remark = #{remark} 
+		WHERE dicid = #{dicid}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM t_dic
+		WHERE dicid = #{dicid}
+	</update>
+	
+</mapper>

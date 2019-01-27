@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.tgoods.dao.TGoodsDao">
+    
+	<sql id="tGoodsColumns">
+		a.goodsid AS "goodsid",
+		a.goodsname AS "goodsname",
+		a.image AS "image",
+		a.fabric AS "fabric",
+		a.style AS "style",
+		a.color AS "color",
+		a.technology AS "technology",
+		a.goodsdetail AS "goodsdetail",
+		a.sort AS "sort",
+		a.createtime AS "createtime",
+		a.state
+	</sql>
+	
+	<sql id="tGoodsJoins">
+	</sql>
+    
+	<select id="get" resultType="TGoods">
+		SELECT 
+			<include refid="tGoodsColumns"/>
+		FROM t_goods a
+		<include refid="tGoodsJoins"/>
+		WHERE a.goodsid = #{goodsid}
+	</select>
+	
+	<select id="findList" resultType="TGoods">
+		SELECT 
+			a.goodsid AS "goodsid",
+			a.goodsname AS "goodsname",
+			a.image AS "image",
+			df.dicname AS "fabric",
+			ds.dicname AS "style",
+			dc.dicname AS "color",
+			dt.dicname AS "technology",
+			a.goodsdetail AS "goodsdetail",
+			a.sort AS "sort",
+			a.createtime AS "createtime",
+			a.state
+		FROM t_goods a 
+		left join t_dic df on df.dicvalue=a.fabric and df.dictype='fabric' 
+		left join t_dic ds on ds.dicvalue=a.style and ds.dictype='style' 
+		left join t_dic dc on dc.dicvalue=a.color and dc.dictype='color' 
+		left join t_dic dt on dt.dicvalue=a.technology and dt.dictype='technology' 
+		<where>
+			a.state in (1,2) 
+			<if test="goodsname!=null and goodsname!=''">
+				and a.goodsname like concat('%', #{goodsname} , '%')
+			</if>
+		</where>
+		ORDER BY a.createtime desc
+	</select>
+	
+	<select id="findAllList" resultType="TGoods">
+		SELECT 
+			<include refid="tGoodsColumns"/>
+		FROM t_goods a
+		<include refid="tGoodsJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_goods(
+			goodsid,
+			goodsname,
+			image,
+			fabric,
+			style,
+			color,
+			technology,
+			goodsdetail,
+			sort,
+			createtime
+		) VALUES (
+			#{goodsid},
+			#{goodsname},
+			#{image},
+			#{fabric},
+			#{style},
+			#{color},
+			#{technology},
+			#{goodsdetail},
+			#{sort},
+			now()
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_goods SET 	
+			goodsname = #{goodsname},
+			image = #{image},
+			fabric = #{fabric},
+			style = #{style},
+			color = #{color},
+			technology = #{technology},
+			goodsdetail = #{goodsdetail},
+			sort = #{sort} 
+		WHERE goodsid = #{goodsid}
+	</update>
+	
+	<update id="updateState" parameterType="TGoods">
+		UPDATE t_goods SET 	
+			state = #{state} 
+		WHERE goodsid = #{goodsid}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM t_goods
+		WHERE goodsid = #{goodsid}
+	</update>
+	
+</mapper>

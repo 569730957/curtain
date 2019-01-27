@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.tcate.dao.TCateDao">
+    
+	<sql id="tCateColumns">
+		a.cateid AS "cateid",
+		a.catename AS "catename",
+		a.sort AS "sort",
+		a.state
+	</sql>
+	
+	<sql id="tCateJoins">
+	</sql>
+    
+	<select id="get" resultType="TCate">
+		SELECT 
+			<include refid="tCateColumns"/>
+		FROM t_cate a
+		<include refid="tCateJoins"/>
+		WHERE a.cateid = #{cateid}
+	</select>
+	
+	<select id="findList" resultType="TCate">
+		SELECT 
+			<include refid="tCateColumns"/>
+		FROM t_cate a
+		<where>
+			a.state in (0,1) and a.cateid!='0' 
+		</where>
+		ORDER BY sort asc
+	</select>
+	
+	<select id="findAllList" resultType="TCate">
+		SELECT 
+			<include refid="tCateColumns"/>
+		FROM t_cate a
+		<include refid="tCateJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_cate(
+			cateid,
+			catename,
+			sort,
+			state
+		) VALUES (
+			#{cateid},
+			#{catename},
+			#{sort},
+			#{state}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_cate SET 	
+			catename = #{catename},
+			sort = #{sort},
+			state= #{state} 
+		WHERE cateid = #{cateid}
+	</update>
+	
+	<update id="updateState" parameterType="TCate">
+		UPDATE t_cate SET 	
+			state= #{state} 
+		WHERE cateid = #{cateid}
+	</update>
+	
+	
+	<update id="delete">
+		DELETE FROM t_cate
+		WHERE cateid = #{id}
+	</update>
+	
+</mapper>

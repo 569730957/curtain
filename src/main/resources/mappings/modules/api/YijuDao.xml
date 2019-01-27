@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.api.dao.YijuDao">
+    
+	<insert id="addCollect" parameterType="com.thinkgem.jeesite.modules.api.entity.ApiCollect">
+		insert into t_collect(collectid,userid,goodsid,createtime) 
+		values(#{collectid},#{userid},#{goodsid},now())
+	</insert>	
+	
+	<delete id="delCollect" parameterType="String">
+		delete from t_collect where collectid=#{collectid}
+	</delete>	
+	
+	<select id="getMyCollect" parameterType="com.thinkgem.jeesite.modules.api.entity.ApiCollect"
+		resultType="com.thinkgem.jeesite.modules.api.entity.ApiCollect">
+		select c.collectid,c.userid,c.goodsid,
+		date_format(c.createtime,'%Y-%m-%d %H:%i:%s') createtime,
+		g.goodsname,g.image  
+		from t_collect c left join t_goods g on g.goodsid=c.goodsid 
+		where c.userid=#{userid} 
+		order by c.createtime desc 
+		limit #{page},#{pagesize}
+	</select>
+	
+	<select id="getDicByType" parameterType="String"
+		resultType="com.thinkgem.jeesite.modules.api.entity.ApiDic">
+		select dicid,dictype,dicname,dicvalue from t_dic 
+		where dictype=#{dictype} order by sort asc
+	</select>
+	<select id="getCate" resultType="com.thinkgem.jeesite.modules.api.entity.ApiCate">
+		select cateid,catename from t_cate where state=1 order by sort asc
+	</select>
+	
+	
+	<select id="getGoods" parameterType="com.thinkgem.jeesite.modules.api.entity.ApiGoods"
+		resultType="com.thinkgem.jeesite.modules.api.entity.ApiGoods">
+		select g.goodsid,g.goodsname,g.image,
+			df.dicname AS "fabric",
+			ds.dicname AS "style",
+			dc.dicname AS "color",
+			dt.dicname AS "technology"  from t_goods g 
+		left join t_dic df on df.dicvalue=g.fabric and df.dictype='fabric' 
+		left join t_dic ds on ds.dicvalue=g.style and ds.dictype='style' 
+		left join t_dic dc on dc.dicvalue=g.color and dc.dictype='color' 
+		left join t_dic dt on dt.dicvalue=g.technology and dt.dictype='technology' 
+		<where>
+			g.state =1  
+			<if test="fabric!=null and fabric!=''">
+				and g.fabric = #{fabric}
+			</if>
+			<if test="style!=null and style!=''">
+				and g.style = #{style}
+			</if>
+			<if test="color!=null and color!=''">
+				and g.color = #{color}
+			</if>
+			<if test="technology!=null and technology!=''">
+				and g.technology = #{technology}
+			</if>
+			<if test="cateid!=null and cateid!='' and cateid!='0'">
+				and g.goodsid
+				in (select goodsid from t_goods_cate where cateid=#{cateid})
+			</if>
+		</where>
+		order by g.sort asc,g.createtime desc
+		limit #{page},#{pagesize}
+	</select>
+	
+	
+	<select id="getStore" resultType="com.thinkgem.jeesite.modules.api.entity.ApiStore">
+		select storeid,storename,logo from t_store limit 1
+	</select>
+	
+	<select id="getGoodsById" parameterType="String"
+		resultType="com.thinkgem.jeesite.modules.api.entity.ApiGoods">
+		select g.goodsid,g.goodsname,g.image,
+			df.dicname AS "fabric",
+			ds.dicname AS "style",
+			dc.dicname AS "color",
+			dt.dicname AS "technology",
+			g.goodsdetail AS "goodsdetail" from t_goods g 
+		left join t_dic df on df.dicvalue=g.fabric and df.dictype='fabric' 
+		left join t_dic ds on ds.dicvalue=g.style and ds.dictype='style' 
+		left join t_dic dc on dc.dicvalue=g.color and dc.dictype='color' 
+		left join t_dic dt on dt.dicvalue=g.technology and dt.dictype='technology' 
+		where g.goodsid=#{goodsid}
+	</select>
+	
+	<select id="checkOpenid" parameterType="String" resultType="int">
+		select count(1) from t_user where openid=#{openid}
+	</select>
+	<insert id="insertUser" parameterType="com.thinkgem.jeesite.modules.api.entity.ApiUser">
+		insert intp t_user(userid,openid,nickname,portrait,gender,province,city,createtime) 
+		values(#{userid},#{openid},#{nickname},#{portrait},#{gender},#{province},#{city},now())
+	</insert>
+	<select id="getUserByOpenid" parameterType="String" resultType="com.thinkgem.jeesite.modules.api.entity.ApiUser">
+		select userid,openid,nickname,portrait,gender,province,city from t_user where openid=#{openid}
+	</select>
+	
+	<select id="checkIsCollect" resultType="int" parameterType="com.thinkgem.jeesite.modules.api.entity.ApiCollect">
+		select count(*) from t_collect where userid=#{userid} and goodsid=#{goodsid}
+	</select>
+	
+</mapper>

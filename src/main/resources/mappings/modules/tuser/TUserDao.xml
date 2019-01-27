@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.tuser.dao.TUserDao">
+    
+	<sql id="tUserColumns">
+		a.userid AS "userid",
+		a.openid AS "openid",
+		a.nickname AS "nickname",
+		a.portrait,
+		a.province,
+		a.city,
+		a.createtime AS "createtime"
+	</sql>
+	
+	<sql id="tUserJoins">
+	</sql>
+    
+	<select id="get" resultType="TUser">
+		SELECT 
+			<include refid="tUserColumns"/>
+		FROM t_user a
+		<include refid="tUserJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TUser">
+		SELECT 
+			<include refid="tUserColumns"/>
+		FROM t_user a
+		<include refid="tUserJoins"/>
+		<where>
+			<if test="nickname!=null and nickname!=''">
+				and a.nickname like concat('%', #{nickname} , '%')
+			</if>
+		</where>
+		ORDER BY a.createtime desc
+	</select>
+	
+	<select id="findAllList" resultType="TUser">
+		SELECT 
+			<include refid="tUserColumns"/>
+		FROM t_user a
+		<include refid="tUserJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_user(
+			userid,
+			openid,
+			nickname,
+			createtime
+		) VALUES (
+			#{userid},
+			#{openid},
+			#{nickname},
+			#{createtime}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_user SET 	
+			userid = #{userid},
+			openid = #{openid},
+			nickname = #{nickname},
+			createtime = #{createtime}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM t_user
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

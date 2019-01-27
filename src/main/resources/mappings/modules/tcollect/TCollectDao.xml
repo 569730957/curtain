@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.tcollect.dao.TCollectDao">
+    
+	<sql id="tCollectColumns">
+		a.collectid AS "collectid",
+		a.userid AS "userid",
+		a.goodsid AS "goodsid",
+		a.createtime AS "createtime"
+	</sql>
+	
+	<sql id="tCollectJoins">
+	</sql>
+    
+	<select id="get" resultType="TCollect">
+		SELECT 
+			<include refid="tCollectColumns"/>
+		FROM t_collect a
+		<include refid="tCollectJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TCollect">
+		SELECT 
+			<include refid="tCollectColumns"/>,
+			u.nickname,g.goodsname,g.image 
+		FROM t_collect a
+		left join t_user u on u.userid=a.userid 
+		left join t_goods g on g.goodsid=a.goodsid 
+		<where>
+			<if test="nickname!=null and nickname!=''">
+				and u.nickname like concat('%',#{nickname},'%')
+			</if>
+			<if test="goodsname!=null and goodsname!=''">
+				and g.goodsname like concat('%',#{goodsname},'%')
+			</if>
+		</where>
+		ORDER BY a.createtime desc
+	</select>
+	
+	<select id="findAllList" resultType="TCollect">
+		SELECT 
+			<include refid="tCollectColumns"/>
+		FROM t_collect a
+		<include refid="tCollectJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_collect(
+			collectid,
+			userid,
+			goodsid,
+			createtime
+		) VALUES (
+			#{collectid},
+			#{userid},
+			#{goodsid},
+			#{createtime}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_collect SET 	
+			collectid = #{collectid},
+			userid = #{userid},
+			goodsid = #{goodsid},
+			createtime = #{createtime}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM t_collect
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
