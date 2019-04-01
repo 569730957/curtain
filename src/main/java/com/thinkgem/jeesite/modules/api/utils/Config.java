@@ -21,7 +21,7 @@ import com.thinkgem.jeesite.common.utils.IdGen;
 public final class Config {
 
 	public static class Data {
-		public static String IPPORT = "http://localhost:8081/"; 
+		public static String IPPORT = "https://www.rengkeng.cn/"; 
 		/** 头像路径 */
 		public static final String PATHAVATAR_PORTRAIT = "/userfiles/portrait/";
 		public static final String PATHAVATAR_IMAGE = "/userfiles/images/";

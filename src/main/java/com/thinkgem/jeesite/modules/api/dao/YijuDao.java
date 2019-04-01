@@ -15,7 +15,7 @@ import com.thinkgem.jeesite.modules.api.entity.ApiUser;
 public interface YijuDao {
 
 	public int addCollect(ApiCollect c);
-	public int delCollect(String collectid);
+	public int delCollect(ApiCollect c);
 	public List<ApiCollect> getMyCollect(ApiCollect c);
 	
 	public List<ApiDic> getDicByType(String dictype);
@@ -24,6 +24,7 @@ public interface YijuDao {
 	public List<ApiGoods> getGoods(ApiGoods g);
 	public ApiStore getStore();
 	public ApiGoods getGoodsById(String goodsid);
+	public List<ApiGoods> getGoodsByIds(List<String> list);
 	
 	public int checkOpenid(String openid);
 	public int insertUser(ApiUser u);

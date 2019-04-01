@@ -1,5 +1,6 @@
 package com.thinkgem.jeesite.modules.api.web;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,9 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSON;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.thinkgem.jeesite.common.utils.IdGen;
+import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.api.entity.ApiCate;
 import com.thinkgem.jeesite.modules.api.entity.ApiCollect;
 import com.thinkgem.jeesite.modules.api.entity.ApiDic;
@@ -87,6 +91,7 @@ public class YijuController {
 					try {
 						map = request_getGoods(reqPayloadBody);
 					} catch (Exception e) {
+						e.printStackTrace();
 						map = ResponseResultUtils.responseErrorMessage(0, e);
 					}
 				}else if(api.equals("getStore")){
@@ -98,6 +103,12 @@ public class YijuController {
 				}else if(api.equals("getGoodsById")){
 					try {
 						map = request_getGoodsById(reqPayloadBody);
+					} catch (Exception e) {
+						map = ResponseResultUtils.responseErrorMessage(0, e);
+					}
+				}else if(api.equals("getGoodsByIds")){
+					try {
+						map = request_getGoodsByIds(reqPayloadBody);
 					} catch (Exception e) {
 						map = ResponseResultUtils.responseErrorMessage(0, e);
 					}
@@ -113,6 +124,8 @@ public class YijuController {
 			e.printStackTrace();
 			map = ResponseResultUtils.responseErrorMessage("", e);
 		}
+		
+		System.out.println(com.alibaba.fastjson.JSONObject.toJSONString(map));
 		return map;
 	}
 	
@@ -166,8 +179,14 @@ public class YijuController {
 	}
 	//用户取消收藏
 	private Map<String, Object> request_delCollect(JSONObject reqPayloadBody) {
-		String collectid = reqPayloadBody.getString("collectid");
-		int result=service.delCollect(collectid);
+		String goodsid = reqPayloadBody.getString("goodsid");
+		String userid = reqPayloadBody.getString("userid");
+		
+		ApiCollect c=new ApiCollect();
+		c.setGoodsid(goodsid);
+		c.setUserid(userid);
+		
+		int result=service.delCollect(c);
 		return ResponseResultUtils.responseStringOrInt(result);
 	}
 	//查询我的收藏
@@ -178,6 +197,9 @@ public class YijuController {
 		c.setUserid(uid);
 		c.setPagePageSize(reqPayloadBody.getInt("page"), reqPayloadBody.getInt("pagesize"));
 		List<ApiCollect> list=service.getMyCollect(c);
+		for(ApiCollect gg:list){
+			gg.setImage(TSuper.setImageURL(gg.getImage()));
+		}
 		return ResponseResultUtils.responseList(list);
 	}
 	
@@ -207,6 +229,10 @@ public class YijuController {
 		ApiGoods g = new Gson().fromJson(reqPayloadBody.toString(), new TypeToken<ApiGoods>() {}.getType());
 		g.setPagePageSize(reqPayloadBody.getInt("page"), reqPayloadBody.getInt("pagesize"));
 		List<ApiGoods> list=service.getGoods(g);
+		for(ApiGoods gg:list){
+			gg.setImage(TSuper.setImageURL(gg.getImage()));
+		}
+		
 		return ResponseResultUtils.responseList(list);
 	}
 	
@@ -220,12 +246,42 @@ public class YijuController {
 	//根据商品id查询详情
 	private  Map<String, Object> request_getGoodsById(JSONObject reqPayloadBody) {
 		String goodsid = reqPayloadBody.getString("goodsid");
+		String userid = reqPayloadBody.getString("userid");
+		
 		ApiGoods g=service.getGoodsById(goodsid);
+		//查询是否已经收藏了该商品
+		ApiCollect c=new ApiCollect();
+		c.setUserid(userid);
+		c.setGoodsid(goodsid);
+		int ck = service.checkIsCollect(c);
+		if(ck>0){
+			//已经收藏
+			g.setIscollect(1);
+		}else{
+			//没有收藏
+			g.setIscollect(0);
+		}
 		return ResponseResultUtils.responseMap(g);
 	}
 	
 	
-	
+	private Map<String, Object> request_getGoodsByIds(JSONObject reqPayloadBody) {
+		
+		String goodsids = reqPayloadBody.getString("goodsids");
+		//根据逗号split
+		if(StringUtils.isNotEmpty(goodsids)){
+			String[] arr=goodsids.split(",");
+			List<String> list= Arrays.asList(arr);
+			
+			List<ApiGoods> g=service.getGoodsByIds(list);
+			for(ApiGoods gg:g){
+				gg.setImage(TSuper.setImageURL(gg.getImage()));
+			}
+			
+			return ResponseResultUtils.responseList(g);
+		}
+		return ResponseResultUtils.responseList(null);
+	}
 	
 	
 	

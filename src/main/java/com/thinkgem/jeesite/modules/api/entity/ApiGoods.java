@@ -15,6 +15,15 @@ public class ApiGoods extends TSuper{
 	private String goodsdetail;
 	private String createtime;
 	private String cateid;
+	private int iscollect;
+	
+	
+	public int getIscollect() {
+		return iscollect;
+	}
+	public void setIscollect(int iscollect) {
+		this.iscollect = iscollect;
+	}
 	public String getGoodsid() {
 		return goodsid;
 	}

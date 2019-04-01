@@ -33,8 +33,8 @@ public class YijuService {
 	}
 	
 	@Transactional(readOnly = false)
-	public int delCollect(String collectid){
-		return dao.delCollect(collectid);
+	public int delCollect(ApiCollect c){
+		return dao.delCollect(c);
 	}
 	
 	public List<ApiCollect> getMyCollect(ApiCollect c){
@@ -49,6 +49,7 @@ public class YijuService {
 	}
 	
 	public List<ApiGoods> getGoods(ApiGoods g){
+		System.out.println(g.getCateid());
 		return dao.getGoods(g);
 	}
 	public ApiStore getStore(){
@@ -58,6 +59,11 @@ public class YijuService {
 	public ApiGoods getGoodsById(String goodsid){
 		return dao.getGoodsById(goodsid);
 	}
+	
+	public List<ApiGoods> getGoodsByIds(List<String> list){
+		return dao.getGoodsByIds(list);
+	}
+	
 	
 	@Transactional(readOnly = false)
 	public ApiUser getByOpenid(ApiUser u){
@@ -72,6 +78,12 @@ public class YijuService {
 		}
 		//注册了就直接查询返回
 		return dao.getUserByOpenid(u.getOpenid());
+	}
+	
+	
+	@Transactional(readOnly = false)
+	public int checkIsCollect(ApiCollect c){
+		return dao.checkIsCollect(c);
 	}
 	
 }
